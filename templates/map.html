@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Data Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Location Tracking Application</h1>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([0, 0], 2);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var gpsData = {{ gps_data | tojson | safe }};
+
+        gpsData.forEach(function (data) {
+            var coords = data.split(",");
+            var latitude = parseFloat(coords[0].split("=")[1]);
+            var longitude = parseFloat(coords[1].split("=")[1]);
+            
+            L.marker([latitude, longitude]).addTo(map)
+                .bindPopup("Latitude: " + latitude + "<br>Longitude: " + longitude)
+                .openPopup();
+        });
+    </script>
+</body>
+</html>
